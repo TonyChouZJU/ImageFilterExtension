@@ -17,9 +17,10 @@ def comic(img):
     img_array[:, :, 0] = abs(g - b + g + r) * r / 256
     img_array[:, :, 1] = abs(b - g + b + r) * r / 256
     img_array[:, :, 2] = abs(b - g + b + r) * r / 256
-    for ind in range(3):
-        r_idx, c_idx = np.where(img_array[:, :, ind] >= 255)
-        img_array[r_idx, c_idx, ind] = 255
+    #for ind in range(3):
+    #    r_idx, c_idx = np.where(img_array[:, :, ind] >= 255)
+    #   img_array[r_idx, c_idx, ind] = 255
+    img_array = np.minimum(img_array, 255)
     return img_array
 '''
 def comic_1(img):
@@ -55,10 +56,10 @@ if __name__ == "__main__":
     import matplotlib.pylab as plt
     import cv2
 
-    path = os.path.join( os.path.dirname(__file__), 'images', 'lam.jpg')
+    path = os.path.join(os.path.dirname(__file__), 'images', 'lam.jpg')
     print path
     if len(sys.argv) == 2:
-        path  = sys.argv[1]
+        path = sys.argv[1]
 
     start = time.time()
     
@@ -66,12 +67,10 @@ if __name__ == "__main__":
     img = comic(img)
 
     plt.rcParams['image.cmap'] = 'gray'
-    plt.imshow(img)
+    plt.imshow(img/255.)
     plt.show()
     img_save = Image.fromarray(np.uint8(img)).convert('L')
-    img_save.save(os.path.splitext(path)[0]+'.comic2.jpg', 'JPEG')
-
-
+    img_save.save(os.path.splitext(path)[0]+'.comic3.jpg', 'JPEG')
 
     end = time.time()
     print 'It all spends %f seconds time' % (end-start)

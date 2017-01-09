@@ -45,14 +45,16 @@ def find_edge(img, angle):
 if __name__ == "__main__":
     import sys, os, time
 
-    path = os.path.dirname(__file__) + os.sep.join(['./', 'images', 'lam.jpg'])
+    # path = os.path.dirname(__file__) + os.sep.join(['./', 'images', 'lam.jpg'])
+    path = os.path.join(os.path.dirname(__file__), 'images', 'lam.jpg')
+
     angle = 60
     
     if len(sys.argv) == 2:
         try:
             angle = int(sys.argv[1])
         except ValueError:
-            path  = sys.argv[1]
+            path = sys.argv[1]
     elif len(sys.argv) == 3:
         path = sys.argv[1]
         angle = int(sys.argv[2])
