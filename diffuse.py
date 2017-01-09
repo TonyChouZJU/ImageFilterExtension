@@ -8,6 +8,7 @@ Created on 2011-7-6
 
 import random
 from PIL import Image
+import numpy as np
 
 def diffuse(img, degree):
     '''
@@ -40,10 +41,31 @@ def diffuse(img, degree):
             
     return dst_img
 
+
+def diffuse(img, degree):
+    height, width = img.shape[0:2]
+    r_idx_array, c_idx_array = np.where(img[:,:,0] < 256)
+    r_idx_array = r_idx_array.reshape(height, width)
+    c_idx_array = c_idx_array.reshape(height, width)
+    rdm_array = np.random.randint(-degree, degree, size=(2, height, width))
+    r_idx_array += rdm_array[0]
+    c_idx_array += rdm_array[1]
+    bd_array_zero = np.zeros((height, width), dtype=np.uint8)
+    bd_array_r = np.ones((height, width), dtype=np.uint8) * (height - 1)
+    bd_array_c = np.ones((height, width), dtype=np.uint8) * (width - 1)
+    new_r_idx_array = np.minimum(np.maximum(r_idx_array, bd_array_zero), bd_array_r)
+    new_c_idx_array = np.minimum(np.maximum(c_idx_array, bd_array_zero), bd_array_c)
+    new_r_idx_array = new_r_idx_array.flatten()
+    new_c_idx_array = new_c_idx_array.flatten()
+    img = img[new_r_idx_array, new_c_idx_array].reshape(height, width, 3)
+    return img
+
+
 if __name__ == "__main__":
     import sys, os, time
 
-    path = os.path.dirname(__file__) + os.sep.join(['./', 'images', 'lam.jpg'])
+    #path = os.path.dirname(__file__) + os.sep.join(['./', 'images', 'lam.jpg'])
+    path = os.path.join( os.path.dirname(__file__), 'images', 'lam.jpg')
     #degree = 16
     degree = 2 
     
@@ -58,9 +80,14 @@ if __name__ == "__main__":
 
     start = time.time()
     
-    img = Image.open(path)
+    #img = Image.open(path)
+    import cv2
+    import matplotlib.pylab as plt
+
+    img = cv2.imread(path)[:, :, (2, 1, 0)]
     img = diffuse(img, degree)
-    img.save(os.path.splitext(path)[0]+'.diffuse.jpg', 'JPEG')
+    img = Image.fromarray(np.uint8(img))
+    img.save(os.path.splitext(path)[0]+'.diffuse_2.jpg', 'JPEG')
 
     end = time.time()
     print 'It all spends %f seconds time' % (end-start)
