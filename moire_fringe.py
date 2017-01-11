@@ -10,10 +10,12 @@ import math
 from PIL import Image
 import numpy as np
 import cv2
+import matplotlib.pylab as plt
 
 from inosculate import inosculate
 
 def moire_fringe(img, degree):
+    #img = cv2.cvtColor(img.astype(np.uint8), cv2.COLOR_RGB2RGBA).astype(np.uint32)
     degree = min(max(degree, 1), 16)
     height, width, _ = img.shape
     center = width / 2, height / 2
@@ -22,19 +24,26 @@ def moire_fringe(img, degree):
     r_idx_array = r_idx_array.reshape(height, width)
     c_idx_array = c_idx_array.reshape(height, width)
 
-    offset_x = center[0] - r_idx_array
-    offset_y = center[1] - c_idx_array
+    offset_x = r_idx_array - center[0]
+    offset_y = c_idx_array - center[1]
     radian = np.arctan2(offset_y, offset_x)
     radius = np.sqrt(offset_x ** 2 + offset_y ** 2)
 
     x = radius * np.cos(radian + degree * radius)
     y = radius * np.sin(radian + degree * radius)
 
-    x = np.minimum(np.maximum(x.astype(np.uint32), 0), width - 1)
-    y = np.minimum(np.maximum(y.astype(np.uint32), 0), height - 1)
+    #不能使用uint
+    x = np.minimum(np.maximum(x.astype(np.int32), 0), width - 1)
+    y = np.minimum(np.maximum(y.astype(np.int32), 0), height - 1)
 
+    #x = x.flatten()
+    #y = y.flatten()
     dst_img = img[y, x, :]
 
+    plt.imshow(img/255.)
+    plt.show()
+    plt.imshow(dst_img/255.)
+    plt.show()
     return inosculate(img, dst_img, 128)  # 对生成的图像和源图像进行色彩混合
 
 '''

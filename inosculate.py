@@ -10,10 +10,21 @@ from PIL import Image
 import numpy as np
 import cv2
 
+import matplotlib.pylab as plt
 def inosculate(bg_img, fg_img, transparency):
     if fg_img.shape[-1] == 3:
-        fg_img = cv2.cvtColor(fg_img.astype(np.uint8), cv2.COLOR_RGB2RGBA).astype(np.uint32)
+        fg_img_png = cv2.cvtColor(fg_img.astype(np.uint8), cv2.COLOR_RGB2RGBA).astype(np.uint32)
+    else:
+        fg_img_png = fg_img
 
+    if bg_img.shape[-1] == 3:
+        bg_img_png = cv2.cvtColor(bg_img.astype(np.uint8), cv2.COLOR_RGB2RGBA).astype(np.uint32)
+    else:
+        bg_img_png = bg_img
+
+
+    #plt.imshow(fg_img/255.)
+    #plt.show()
     bg_height, bg_width, _ = bg_img.shape
     fg_height, fg_width, _ = fg_img.shape
     height = min(bg_height, fg_height)
@@ -23,8 +34,8 @@ def inosculate(bg_img, fg_img, transparency):
     #fg_img_png = np.ones((fg_height, fg_width, 4)) * 255
     #bg_img_png[:, :, 0:3] = bg_img
     #fg_img_png[:, :, 0:3] = fg_img
-    bg_img_png = cv2.cvtColor(bg_img.astype(np.uint8), cv2.COLOR_RGB2RGBA).astype(np.uint32)
-    fg_img_png = cv2.cvtColor(fg_img.astype(np.uint8), cv2.COLOR_RGB2RGBA).astype(np.uint32)
+    #bg_img_png = cv2.cvtColor(bg_img.astype(np.uint8), cv2.COLOR_RGB2RGBA).astype(np.uint32)
+    #fg_img_png = cv2.cvtColor(fg_img.astype(np.uint8), cv2.COLOR_RGB2RGBA).astype(np.uint32)
 
     #dst_img = fg_img_png[:height, :width, :] * transparency / 255 + \
     #          bg_img_png[:height, :width, :] * (255 - transparency) / 255
@@ -77,6 +88,8 @@ if __name__ == "__main__":
     #fg_img_path = os.path.dirname(__file__) + os.sep.join(['./', 'images', 'lam.jpg'])
     bg_img_path = os.path.join(os.path.dirname(__file__), 'images', 'guanlangaoshou.jpg')
     fg_img_path = os.path.join(os.path.dirname(__file__), 'images', 'lam.jpg')
+    #bg_img_path = os.path.join(os.path.dirname(__file__), 'images', 'rgb.jpg')
+
 
     transparency = 128
     
@@ -97,6 +110,8 @@ if __name__ == "__main__":
     bg_img = cv2.imread(bg_img_path)[:, :, (2, 1, 0)].astype(np.uint32)
     fg_img = cv2.imread(fg_img_path)[:, :, (2, 1, 0)].astype(np.uint32)
     img = inosculate(bg_img, fg_img, transparency)
+    #img = inosculate(bg_img, bg_img, transparency)
+
     img_save = Image.fromarray(np.uint8(img))
     img_save.save(os.path.splitext(fg_img_path)[0]+'.inosculate_3.png', 'PNG')
 

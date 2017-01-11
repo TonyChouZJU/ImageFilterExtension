@@ -6,14 +6,30 @@ Created on 2011-6-23
 @author: Chine
 '''
 from PIL import Image
+import numpy as np
+import cv2
 
 def sketch(img, threshold):
-    '''
+
+    threshold = min(max(0, threshold), 100)
+    height, width, _ = img.shape
+    #注意不恩给你使用 uint
+    img = cv2.cvtColor(img.astype(np.uint8), cv2.COLOR_RGB2GRAY).astype(np.int32)
+    img_src = img[:height-1, :width-1, ].copy()
+    img_rb = img[1:, 1:, ].copy()
+    r_idx, c_idx = np.where(abs(img_src-img_rb) > threshold)
+    dst_img = np.ones(img_src.shape) * 255
+    dst_img[r_idx, c_idx] = 0
+    return dst_img
+
+'''
+def sketch(img, threshold):
+
     @效果：素描
     @param img: instance of Image
     @param threshold: 阈值，阈值越小，绘制的像素点越多，大小范围[0, 100]
     @return: instance of Image
-    '''
+
     if threshold < 0: threshold = 0
     if threshold > 100: threshold = 100
     
@@ -40,11 +56,15 @@ def sketch(img, threshold):
                 pix[w, h] = 255
 
     return img
+'''
+
 
 if __name__ == "__main__":
     import sys, os, time
 
     path = os.path.dirname(__file__) + os.sep.join(['./', 'images', 'lam.jpg'])
+    path = os.path.join(os.path.dirname(__file__), 'images', 'lam.jpg')
+
     threshold = 15
     
     if len(sys.argv) == 2:
@@ -58,9 +78,11 @@ if __name__ == "__main__":
         
     start = time.time()
     
-    img = Image.open(path)
+    #img = Image.open(path)
+    img = cv2.imread(path)[:, :, (2, 1, 0)].astype(np.uint32)
     img = sketch(img, threshold)
-    img.save(os.path.splitext(path)[0]+'.sketch.jpg', 'JPEG')
+    img_save = Image.fromarray(np.uint8(img))
+    img_save.save(os.path.splitext(path)[0]+'.sketch_2.jpg', 'JPEG')
     
     end = time.time()
     print 'It all spends %f seconds time' % (end-start)

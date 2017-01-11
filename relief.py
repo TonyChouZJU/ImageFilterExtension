@@ -7,16 +7,39 @@ Created on 2011-6-24
 '''
 import math
 from PIL import Image
+from PIL import ImageFilter
 
 from utils import Matrix33
 
+
 def relief(img, angle):
-    '''
-    @效果：彩色浮雕
-    @param img: instance of Image
-    @param angle: 进行卷积运算使用的其实偏移角度，大小范围[0, 360]
-    @return: instance of Image
-    '''
+    if angle < 0: angle = 0
+    if angle > 360: angle = 360
+
+    radian = angle * math.pi / 180
+    pi4 = math.pi / 4
+
+    matrix33 = (int(math.cos(radian + pi4) * 256),
+                int(math.cos(radian + 2 * pi4) * 256),
+                int(math.cos(radian + 3 * pi4) * 256),
+                int(math.cos(radian) * 256),
+                256,
+                int(math.cos(radian + 4 * pi4) * 256),
+                int(math.cos(radian - pi4) * 256),
+                int(math.cos(radian - 2 * pi4) * 256),
+                int(math.cos(radian - 3 * pi4) * 256))
+
+    img = img.filter(ImageFilter.Kernel((3,3), matrix33, scale=256))
+    return img
+
+'''
+def relief(img, angle):
+
+    # @效果：彩色浮雕
+    # @param img: instance of Image
+    # @param angle: 进行卷积运算使用的其实偏移角度，大小范围[0, 360]
+    # @return: instance of Image
+
     if angle < 0: angle = 0
     if angle > 360: angle = 360
 
@@ -39,11 +62,13 @@ def relief(img, angle):
     m = Matrix33(matrix33, scale=256) # 缩放值256
 
     return m.convolute(img)
+'''
 
 if __name__ == "__main__":
     import sys, os, time
 
     path = os.path.dirname(__file__) + os.sep.join(['./', 'images', 'lam.jpg'])
+    path = os.path.join(os.path.dirname(__file__), 'images', 'lam.jpg')
     angle = 60
     
     if len(sys.argv) == 2:
@@ -59,7 +84,7 @@ if __name__ == "__main__":
     
     img = Image.open(path)
     img = relief(img, angle)
-    img.save(os.path.splitext(path)[0]+'.relief.png', 'PNG')
+    img.save(os.path.splitext(path)[0]+'.relief_2.png', 'PNG')
 
     end = time.time()
     print 'It all spends %f seconds time' % (end-start)

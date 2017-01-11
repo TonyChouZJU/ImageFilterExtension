@@ -59,6 +59,8 @@ if __name__ == "__main__":
     import sys, os, time
 
     path = os.path.dirname(__file__) + os.sep.join(['./', 'images', 'lam.jpg'])
+    path = os.path.join(os.path.dirname(__file__), 'images', 'lam.jpg')
+
     degree = 25
     
     if len(sys.argv) >= 2:
@@ -79,7 +81,7 @@ if __name__ == "__main__":
     
     img = Image.open(path)
     img = pinch(img, degree)
-    img.save(os.path.splitext(path)[0]+'.pinch.png', 'PNG')
+    img.save(os.path.splitext(path)[0]+'.pinch_2.png', 'PNG')
 
     end = time.time()
     print 'It all spends %f seconds time' % (end-start)

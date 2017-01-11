@@ -6,13 +6,27 @@ Created on 2011-6-24
 @author: Chine
 '''
 from PIL import Image
+import numpy as np
+import cv2
+
 
 def sepia(img):
-    '''
-    @效果：老照片（深褐色）
-    @param img: instance of Image
-    @return: instance of Image
-    '''
+    r = img[:, :, 0].copy()
+    g = img[:, :, 1].copy()
+    b = img[:, :, 2].copy()
+    bit_num = 16
+    img[:, :, 0] = (25756 * r + 50397 * g + 12386 * b) >> bit_num
+    img[:, :, 1] = (22872 * r + 44958 * g + 11010 * b) >> bit_num
+    img[:, :, 2] = (17826 * r + 34996 * g + 8585 * b) >> bit_num
+    img = np.minimum(np.maximum(img, 0), 255)
+    return img
+'''
+def sepia(img):
+
+    # @效果：老照片（深褐色）
+    # @param img: instance of Image
+    # @return: instance of Image
+
     
     # 获得图片的宽、高
     width, height = img.size
@@ -39,21 +53,24 @@ def sepia(img):
             pix[w, h] = R, G, B
 
     return img
-
+'''
 
 if __name__ == "__main__":
     import sys, os, time
     
     path = os.path.dirname(__file__) + os.sep.join(['./', 'images', 'lam.jpg'])
-    
+    path = os.path.join(os.path.dirname(__file__), 'images', 'lam.jpg')
+
     if len(sys.argv) > 1:
         path = sys.argv[1]
 
     start = time.time()
     
-    img = Image.open(path)
+    #img = Image.open(path)
+    img = cv2.imread(path)[:, :, (2, 1, 0)].astype(np.int32)
     img = sepia(img)
-    img.save(os.path.splitext(path)[0]+'.sepia.jpg', 'JPEG')
+    img_save = Image.fromarray(np.uint8(img))
+    img_save.save(os.path.splitext(path)[0]+'.sepia_2.jpg', 'JPEG')
 
     end = time.time()
     print 'It all spends %f seconds time' % (end-start)
