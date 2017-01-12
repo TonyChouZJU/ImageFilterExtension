@@ -18,7 +18,7 @@ def moire_fringe(img, degree):
     #img = cv2.cvtColor(img.astype(np.uint8), cv2.COLOR_RGB2RGBA).astype(np.uint32)
     degree = min(max(degree, 1), 16)
     height, width, _ = img.shape
-    center = width / 2, height / 2
+    center = height / 2, width / 2
 
     r_idx_array, c_idx_array = np.where(img[:, :, 0] < 256)
     r_idx_array = r_idx_array.reshape(height, width)
@@ -40,10 +40,6 @@ def moire_fringe(img, degree):
     #y = y.flatten()
     dst_img = img[y, x, :]
 
-    plt.imshow(img/255.)
-    plt.show()
-    plt.imshow(dst_img/255.)
-    plt.show()
     return inosculate(img, dst_img, 128)  # 对生成的图像和源图像进行色彩混合
 
 '''

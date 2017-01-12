@@ -72,8 +72,7 @@ if __name__ == "__main__":
     img = cv2.imread(path)[:, :, (2, 1, 0)].astype(np.uint32)
     img = glowing_edge(img)
     img_save = Image.fromarray(np.uint8(img))
-    img_save.save(os.path.splitext(path)[0]+'.glowing_edge_3.png', 'PNG')
-    # img_save.save(os.path.splitext(path)[0]+'.glowing_edge3.jpg', 'JPEG')
+    img_save.save(os.path.splitext(path)[0]+'.glowing_edge_2.jpg', 'JPEG')
 
     end = time.time()
     print 'It all spends %f seconds time' % (end-start)

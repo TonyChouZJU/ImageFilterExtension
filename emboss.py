@@ -51,6 +51,7 @@ import sys, os, time
 start = time.time()
     
 path = os.path.dirname(__file__) + os.sep.join(['./', 'images', 'lam.jpg'])
+path = os.path.join(os.path.dirname(__file__), 'images', 'lam.jpg')
 
 img = Image.open(path)
 img = img.filter(ImageFilter.EMBOSS)

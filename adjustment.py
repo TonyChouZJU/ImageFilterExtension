@@ -7,9 +7,12 @@ Created on 2011-7-7
 '''
 
 from PIL import Image
+import cv2
+import numpy as np
 
+'''
 def invert(img):
-    '''对图像进行负像处理'''
+    对图像进行负像处理
     
     if img.mode != "RGBA":
         img = img.convert("RGBA")
@@ -26,6 +29,17 @@ def invert(img):
                         b ^ 0xFF, \
                         a
     return img
+'''
+
+
+def invert(img):
+    if img.shape[-1] == 3:
+        img = cv2.cvtColor(img.astype(np.uint8), cv2.COLOR_RGB2RGBA)
+    img[:, :, 0:3] ^= 0xFF
+    return img
+
+
+
 
 def interleaving(img):
     '''交叉反转'''

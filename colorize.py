@@ -21,12 +21,11 @@ def colorize(img, red=250, green=88, blue=244):
     green = min(max(0, green), 255)
     blue = min(max(0, blue), 255)
 
-    img_array = np.array(img).astype(np.int32)
-
-    gray_img = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
-    gray_img_array = np.tile(gray_img[:, :, np.newaxis], (1, 1, 3))
-    img_array_new = img_array * gray_img_array / 255
-    return img_array_new
+    gray_img = cv2.cvtColor(img.astype(np.uint8), cv2.COLOR_RGB2GRAY).astype(np.uint32)
+    img[:, :, 0] = red * gray_img / 255
+    img[:, :, 1] = green * gray_img / 255
+    img[:, :, 2] = blue * gray_img / 255
+    return img
 
 if __name__ == "__main__":
     import sys, os, time
@@ -50,12 +49,10 @@ if __name__ == "__main__":
     start = time.time()
 
     print path
-    img = cv2.imread(path)[:, :, (2, 1, 0)]
+    img = cv2.imread(path)[:, :, (2, 1, 0)].astype(np.int32)
     img = colorize(img, red, green, blue)
-    plt.imshow(img/255.)
-    plt.show()
     img_save = Image.fromarray(np.uint8(img))
-    img_save.save(os.path.splitext(path)[0]+'.colorize2.jpg', 'JPEG')
+    img_save.save(os.path.splitext(path)[0]+'.colorize_2.jpg', 'JPEG')
 
     end = time.time()
     print 'It all spends %f seconds time' % (end-start)

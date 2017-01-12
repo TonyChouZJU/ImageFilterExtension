@@ -22,16 +22,13 @@ def lighting(img, power=20, center=None):
     c_idx_array = c_idx_array.reshape(height, width)
     distance = np.sqrt((r_idx_array-center[0]) ** 2 + (c_idx_array - center[1]) ** 2)
     r_ok, c_ok = np.where(distance < radius)
-    # obj_boolen_array = distance < radius
 
-    # dheight, dwidth, _ = distance.shape
-    # r_ok = r_ok.reshape(dheight, dwidth)
-    # c_ok = c_ok.reshape(dheight, dwidth)
+    brightness = power * (radius - distance) / radius
 
-    brightness = power * (radius - distance[r_ok][c_ok]) / radius
     brightness = brightness[:, :, np.newaxis]
-    brightness = np.tile(brightness, (height, width, 3))
-    img[r_ok, c_ok, :] = np.minimum(img[r_ok, c_ok, :] + brightness, 255)
+
+    brightness = np.repeat(brightness, 3, axis=2)
+    img[r_ok, c_ok, :] = np.minimum(img[r_ok, c_ok, :] + brightness[r_ok, c_ok, :], 255)
     return img
 
 '''
